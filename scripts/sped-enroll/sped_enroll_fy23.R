@@ -1,7 +1,9 @@
 # sped_enrollment_fy23
-# last updated by Krista Kaput on 2026-02-18
+# last updated by Krista Kaput on 2026-08-27
+# updated 2026-08-27: recode EDFacts suppression/flag codes (-8, -9) to NA
+# so they aren't treated as literal enrollment counts downstream
 
-# This script clean the fy23 special education enrollment data 
+# This script clean the fy23 special education enrollment data
 
 
 # load ---------------------------------
@@ -10,17 +12,23 @@ options(scipen = 999)
 
 library(tidyverse)
 
-# load the special education fy23 enrollment 
+# load the special education fy23 enrollment
 sped_enroll_fy23_raw <- read_csv("sped-data/raw/bchildcountdisabilitycategorylea2022-23.csv", skip = 4)
 
 # Clean the fy23 data -----
 sped_enroll_fy23_clean <- sped_enroll_fy23_raw |>
   rename_with(tolower) |>
   rename(state = "state name",
-         district = "lea name", 
-         dist_id = "nces lea id", 
+         district = "lea name",
+         dist_id = "nces lea id",
          sped_enroll_fy23 = "school age all disabilities") |>
   mutate(dist_id = str_pad(dist_id, width = 7, side = "left", pad = "0")) |>
+  # EDFacts codes -8 (data suppressed due to small cell size) and -9 (data
+  # flagged due to questionable data quality) as literal values in this
+  # column. Recode them to NA so they don't get treated as real enrollment
+  # counts (e.g. used as a denominator) in any downstream analysis.
+  mutate(sped_enroll_fy23 = if_else(sped_enroll_fy23 < 0, NA_real_, sped_enroll_fy23)) |>
+  mutate(sped_enroll_fy23 = coalesce(sped_enroll_fy23, 0)) |>
   select(state, district, dist_id, sped_enroll_fy23)
 
 # Export the data ----
