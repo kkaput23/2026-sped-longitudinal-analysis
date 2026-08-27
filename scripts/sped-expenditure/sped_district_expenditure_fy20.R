@@ -1,5 +1,5 @@
 # sped_district_expenditures_fy20
-# last updated by Krista Kaput on 2026-08-27
+# last updated by Krista Kaput on 2026-02-18
 # updated 2026-08-27:
 #  (1) fixed output filename for state_total_district_count (was writing to
 #      "..._fy21.csv", colliding with the FY21 script's own output of the
@@ -126,4 +126,3 @@ rm(ccd_fy20_raw, ccd_fy20_sped_expenditures, ccd_fy20_sped_no_exp, sped_state_ex
    state_total_district_count)
 
 rm(raw_summary, analysis_summary, comp_df)
-
